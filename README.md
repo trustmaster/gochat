@@ -43,4 +43,18 @@ Then you can open the client part in your browser and try it, e.g. http://localh
 
 ## Description ##
 
-Coming soon...
+The client side of this app is a simple HTML page powered by JavaScript retrieving JSON data from server and posting new messages via AJAX.
+
+Architecture of the server side is shown on the following diagram:
+
+![GoChat structure diagram](http://flowbased.wdfiles.com/local--files/goflow/gochat.png)
+
+The part inside the "App" frame is a flow-based network. Outside it there is just an adapter for standard HTTP server interface of "net/http" package. Here are descriptions for each component:
+
+* Router checks the path for incoming HTTP response packet and decides what controller should handle it. Note: currently it checks request method rather than path because I haven't configured my Nginx proxy to pass paths corrently along with POST method.
+* Controller checks arguments for a GET request and forms a query to a Storage to retrieve new message since last query.
+* SendController prepares a message for submission into the Storage.
+* Storage manages access to a message Queue in memory. It can add new messages or fetch existing ones and pass them as a packet to Responder.
+* Responder encloses the results in JSON response.
+
+The data travels between processes as packets (structure) described in common.go. Each packet contains an instance of http.Request and http.ResponseWriter so it can be returned to the client at any moment. Packets are passed through the channels by pointers, so pointers travel instead of structures themselves.
