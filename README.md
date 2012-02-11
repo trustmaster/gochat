@@ -1,8 +1,8 @@
-== Simple chat in Go using GoFlow library ==
+# Simple chat in Go using GoFlow library #
 
 This application was originally built to demonstrate Flow-based programming in Go programming language using [GoFlow](https://github.com/trustmaster/goflow) library.
 
-== Installation ==
+## Installation ##
 
 You need at least Go weekly.2012-01-27 to compile this example and some proxy webserver to behave as front end (e.g. nginx).
 
@@ -39,6 +39,8 @@ Copy index.html and jquery-1.x.x.js to your webserver folder, e.g. gochat. You n
 		}
 ```
 
-== Description ==
+Then you can open the client part in your browser and try it, e.g. http://localhost/gochat/
+
+## Description ##
 
 Coming soon...
