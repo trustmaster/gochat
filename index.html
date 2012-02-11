@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>GoChat!</title>
+<style type="text/css">
+#messages {
+	border: 2px dashed #777799;
+	padding: 10px;
+	margin: 10px auto 10px auto;
+	list-style: none;
+	width: 80%;
+}
+
+#newmsg div {
+	border: 1px solid #bbbb77;
+	padding: 5px;
+	margin: 10px auto 10px auto;
+	width: 675px;
+}
+</style>
+<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+<script type="text/javascript">
+	var lastUpdate = 0;
+	var refInterval = 200;
+
+	function escapeHtml(unsafe) {
+		return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+	}
+
+	function refreshMsg() {
+		$.getJSON('/gochat/chat', 'since=' + lastUpdate, function(data) {
+			var items = [];
+			var date = new Date();
+			$.each(data, function(key, value) {
+				date.setTime(parseInt(value.Time * 1000));
+				items.push('<li id="msg_' + value.Time + '"><em>'
+						+ date.toLocaleTimeString() + '</em> <strong>'
+						+ escapeHtml(value.Author) + '</strong>: ' + escapeHtml(value.Text)
+						+ '</li>');
+				lastUpdate = value.Time;
+			});
+			if (items.length > 0) {
+				if ($('ul#messages').html() == '') {
+					$('ul#messages').html(items.join(''));
+				} else {
+					$('ul#messages li:last').after(items.join(''));
+				}
+			}
+		});
+	}
+
+	$(document).ready(function() {
+		setInterval(refreshMsg, refInterval);
+		$('#newmsg').submit(function() {
+			$.post('/gochat/chat', $('form#newmsg').serialize()).success(refreshMsg);
+			$('#textin').val('');
+			return false;
+		});
+	});
+</script>
+</head>
+<body>
+	<ul id="messages"></ul>
+	<form id="newmsg">
+		<div>
+			<label for="author">Author</label> <input type="text" name="author" />
+		</div>
+		<div>
+			<textarea id="textin" name="text" rows="3" cols="80"></textarea>
+			<br />
+			<button id="send" type="submit">Send</button>
+		</div>
+	</form>
+</body>
+</html>
